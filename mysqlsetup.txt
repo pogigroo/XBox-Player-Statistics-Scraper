@@ -1,0 +1,2 @@
+CREATE USER 'useextractor'@'localhost' IDENTIFIED BY 'extractor';
+
