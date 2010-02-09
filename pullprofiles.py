@@ -28,7 +28,11 @@ def main():
 		a_url=u'http://www.360voice.com/api/blog-getentries.asp?tag=%s&played=1' % urllib.quote(tag)
 		print a_url
 		response, content = h.request(a_url)
-		tree = etree.fromstring(content)
+		try:
+			tree = etree.fromstring(content)
+		except lxml.etree.Error, e:
+			print e
+			continue
 		tag = tree[0].findtext('gamertag')
 		print tag
 		entrylist = tree[1].getchildren()
@@ -46,7 +50,7 @@ def mapentries(entrylist, cur, tag):
 		try:
 			cur.execute(
 			""" INSERT INTO history (blogid, tag, entrydate, body)
-				VALUES (%s, %s, %s, %s)""", (blogid, tag, entrydate, body)
+				VALUES (%s, %s, %s, %s)""", (blogid, tag, entrydate, body.encode('utf-8'))
 				)
 		except MySQLdb.Error, e:
 			print "Error %d: %s, blogid: %s" % (e.args[0], e.args[1], blogid)
@@ -54,7 +58,13 @@ def mapentries(entrylist, cur, tag):
 	
 def gettags(tagcursor):
 	"""Generator supllying tags from database. Note that fetchone() returns the next row of the result set as a tuple, or the value None if no more rows are available"""
-	tagcursor.execute(""" SELECT tag FROM users """)
+	tagcursor.execute("""
+		SELECT users.tag
+		FROM users
+		WHERE users.tag NOT IN (
+			SELECT history.tag
+			FROM HISTORY) 
+			 """)
 	tag = tagcursor.fetchone()
 	print tag
 	while tag != None:
