@@ -41,12 +41,12 @@ def mapentries(entrylist, cur, tag):
 	"""Takes a list of gamer nodes and passes appropriate tag data to mysql database"""
 	for entry in entrylist:
 		blogid = entry.findtext('blogid')
-		body = entry.findtext('body')
+		body = unicode(entry.findtext('body'), errors='ignore')
 		entrydate = formatdate(entry.findtext('date'))
 		try:
 			cur.execute(
 			""" INSERT INTO history (blogid, tag, entrydate, body)
-				VALUES (%s, %s, %s, %s)""", (blogid, tag, entrydate, body)
+				VALUES (%s, %s, %s, %s) """, (blogid, tag, entrydate, body)
 				)
 		except MySQLdb.Error, e:
 			print "Error %d: %s, blogid: %s" % (e.args[0], e.args[1], blogid)
