@@ -42,10 +42,13 @@ def maptags(gamerlist, cur=cur):
 		tag = gamer.findtext('gamertag')
 		rank = gamer.findtext('rank')
 		country = gamer.findtext('country')
-		cur.execute(
+		try:
+			cur.execute(
 		""" INSERT INTO users (pid, tag, rank, country)
 			VALUES (%s, %s, %s, %s)""", (pid, tag, rank, country)
 			)
+		except MySQLdb.Error, e:
+			print "Error %d: %s, pid: %s" % (e.args[0], e.args[1], pid)
 	pass
 
 	
