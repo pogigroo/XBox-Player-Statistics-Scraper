@@ -10,6 +10,7 @@ import sys
 import os
 from lxml import etree
 import httplib2
+import urllib
 import MySQLdb
 
 conn = MySQLdb.connect (user = 'useextractor',
@@ -24,11 +25,14 @@ h = httplib2.Http('.cache')
 
 def main():
 	for tag in gettags(tagcursor):
-		a_url=u'http://www.360voice.com/api/blog-getentries.asp?tag=%s &played=1' % tag[0].rstrip()
+		a_url=u'http://www.360voice.com/api/blog-getentries.asp?tag=%s&played=1' % urllib.quote(tag)
+		print a_url
 		response, content = h.request(a_url)
 		tree = etree.fromstring(content)
 		tag = tree[0].findtext('gamertag')
+		print tag
 		entrylist = tree[1].getchildren()
+		print tree[1].tag
 		mapentries(entrylist, histcursor, tag)	
 	conn.close()
 	print "Done"
@@ -38,7 +42,7 @@ def mapentries(entrylist, cur, tag):
 	for entry in entrylist:
 		blogid = entry.findtext('blogid')
 		body = entry.findtext('body')
-		entrydate = formatdate(entry.findtext('entrydate'))
+		entrydate = formatdate(entry.findtext('date'))
 		try:
 			cur.execute(
 			""" INSERT INTO history (blogid, tag, entrydate, body)
@@ -52,9 +56,10 @@ def gettags(tagcursor):
 	"""Generator supllying tags from database. Note that fetchone() returns the next row of the result set as a tuple, or the value None if no more rows are available"""
 	tagcursor.execute(""" SELECT tag FROM users """)
 	tag = tagcursor.fetchone()
+	print tag
 	while tag != None:
 		yield tag[0].rstrip() 
-		row = tagcursor.fetchone()
+		tag = tagcursor.fetchone()
 	else:
 		return
 
