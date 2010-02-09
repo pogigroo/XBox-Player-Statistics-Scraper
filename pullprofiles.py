@@ -28,7 +28,7 @@ def main():
 		a_url=u'http://www.360voice.com/api/blog-getentries.asp?tag=%s&played=1' % urllib.quote(tag)
 		print a_url
 		response, content = h.request(a_url)
-		tree = etree.fromstring(content)
+		tree = etree.fromstring(unicode(content, 'utf-8',errors='ignore'))
 		tag = tree[0].findtext('gamertag')
 		print tag
 		entrylist = tree[1].getchildren()
@@ -41,7 +41,7 @@ def mapentries(entrylist, cur, tag):
 	"""Takes a list of gamer nodes and passes appropriate tag data to mysql database"""
 	for entry in entrylist:
 		blogid = entry.findtext('blogid')
-		body = unicode(entry.findtext('body'), errors='ignore')
+		body = entry.findtext('body')
 		entrydate = formatdate(entry.findtext('date'))
 		try:
 			cur.execute(
