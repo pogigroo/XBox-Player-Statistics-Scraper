@@ -49,11 +49,11 @@ def mapentries(entrylist, cur, tag):
 	pass
 	
 def gettags(tagcursor):
-	"""Generator supllying tags from database"""
+	"""Generator supllying tags from database. Note that fetchone() returns the next row of the result set as a tuple, or the value None if no more rows are available"""
 	tagcursor.execute(""" SELECT tag FROM users """)
-	row = tagcursor.fetchone()
-	while row != None:
-		yield row[0]
+	tag = tagcursor.fetchone()
+	while tag != None:
+		yield tag[0].rstrip() 
 		row = tagcursor.fetchone()
 	else:
 		return
