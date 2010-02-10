@@ -19,7 +19,3 @@ CREATE TABLE history (
 	KEY (tag),
 	FULLTEXT(body)
 	);
-
-ALTER TABLE history DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-ALTER DATABASE DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-

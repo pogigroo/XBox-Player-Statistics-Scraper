@@ -30,7 +30,7 @@ def main():
 		response, content = h.request(a_url)
 		try:
 			tree = etree.fromstring(content)
-		except lxml.etree.Error, e:
+		except etree.Error, e:
 			print e
 			continue
 		tag = tree[0].findtext('gamertag')
@@ -63,7 +63,7 @@ def gettags(tagcursor):
 		FROM users
 		WHERE users.tag NOT IN (
 			SELECT history.tag
-			FROM HISTORY) 
+			FROM history) 
 			 """)
 	tag = tagcursor.fetchone()
 	print tag
