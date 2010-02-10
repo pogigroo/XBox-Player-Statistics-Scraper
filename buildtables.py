@@ -20,19 +20,21 @@ conn.autocommit(True)
 
 gamecursor = conn.cursor()
 gamefile = "dat/games.csv"
-
+pdates = "dat/pdates.csv"
 
 def main():
 	filereader = csv.reader(open(gamefile))
+	writer = csv.writer(open(pdates,"w"))
 	for row in filereader:
 		gamecursor.execute("""
 			SELECT tag, min(entrydate) AS firstd 
 			FROM history 
-			WHERE match(body) AGAINST ('"%s"' IN BOOLEAN MODE) 
-			GROUP BY tag""", (row[0]) ) 
-		firstplayrows = cursor.fetchall()
+			WHERE match(body) AGAINST ("%s" IN BOOLEAN MODE) 
+			GROUP BY tag""" % row[0] ) 
+		firstplayrows = gamecursor.fetchall()
 		for firstplay in firstplayrows:
-			print "%s, %s, %s" % (row[0], firstplay[0], firstplay[1])
+			writer.writerow(row+list(firstplay))
+			print "%s, %s, %s" % (row[0] , firstplay[0], firstplay[1])
 	pass
 
 if __name__ == '__main__':
