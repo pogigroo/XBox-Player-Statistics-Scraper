@@ -36,7 +36,6 @@ def main():
 		tag = tree[0].findtext('gamertag')
 		print tag
 		entrylist = tree[1].getchildren()
-		print tree[1].tag
 		mapentries(entrylist, histcursor, tag)	
 	conn.close()
 	print "Done"
@@ -46,7 +45,8 @@ def mapentries(entrylist, cur, tag):
 	for entry in entrylist:
 		blogid = entry.findtext('blogid')
 		body = entry.findtext('body')
-		entrydate = formatdate(entry.findtext('date'))
+		blogdate = entry.findtext('date')
+		entrydate = formatdate(blogdate)
 		try:
 			cur.execute(
 			""" INSERT INTO history (blogid, tag, entrydate, body)
@@ -75,7 +75,7 @@ def gettags(tagcursor):
 
 def formatdate(datestring):
 	"""Changes d/m/yyyy date string to YYYY-MM-DD format"""
-	day, month, year = datestring.split('/', 3)
+	month, day, year = datestring.split('/', 3)
 	newdatestring = year + "-" + month.rjust(2, '0') + "-" + day.rjust(2, '0')
 	return newdatestring
 	
