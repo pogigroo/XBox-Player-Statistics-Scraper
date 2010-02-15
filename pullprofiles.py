@@ -35,8 +35,13 @@ def main():
 			continue
 		tag = tree[0].findtext('gamertag')
 		print tag
-		entrylist = tree[1].getchildren()
-		mapentries(entrylist, histcursor, tag)	
+		try:
+			entrylist = tree[1].getchildren()
+			mapentries(entrylist, histcursor, tag)
+		except IndexError, e:
+			print e
+			continue
+
 	conn.close()
 	print "Done"
 
